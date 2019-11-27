@@ -16,7 +16,7 @@ services:
         networks:
         - appnet
         volumes:
-        - appvol: /var/lib/mysql
+        - appvol= /var/lib/mysql
     nwapp:
         image: ydock2/nwapp:v1
         build:

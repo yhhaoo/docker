@@ -1,0 +1,73 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+    name: nwapp-deploy
+    namespace: nwapp
+    labels:
+        name: nw
+
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+           name: nw
+    minReadySeconds: 30
+    template:
+        metadata:
+            name: nwapp-pod
+            labels:
+                name: nw
+                version: v1
+        spec:
+            containers:
+            - name: nwapp
+              image: ydock2/nwapp:v1
+              imagePullPolicy: IfNotPresent
+              env:
+              - name: DB_PASSWORD
+                valueFrom: 
+                    secretKeyRef:
+                        name: nw-secret
+                        key: db_password
+              - name: DB_HOST
+                valueFrom:
+                    configMapKeyRef:
+                        name: nw-config
+                        key: db_host 
+              - name: DB_USER
+                valueFrom:
+                    configMapKeyRef:
+                        name: nw-config
+                        key: db_user 
+              - name: INSTANCE_IP_ADDRESS
+                valueFrom:
+                    fieldRef:
+                        fieldPath: status.hostIP
+              ports:
+              - name: nw-port
+                containerPort: 3000
+
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+    name: nwapp-svc
+    namespace: nwapp
+    labels:
+        name: nw-svc
+        version: v1
+
+spec:
+    type: LoadBalancer
+    selector: 
+        name: nw
+        version: v1
+    ports:
+    - name: http
+      port: 80
+      targetPort: nw-port
+
+
