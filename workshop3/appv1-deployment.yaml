@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appv1-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      name: myapp
+  template:
+    metadata:
+      labels:
+        name: myapp
+        version: v1
+    spec:
+      containers:
+      - name: myapp-container
+        image: stackupiss/northwind-app:v1
+
+        resources:
+          limits:
+            memory: "55M"
+            cpu: "20m"
+        env:
+          - name: DB_HOST
+            value: mydb-svc
+          - name: DB_PORT
+            value: "3306"
+          - name: DB_USER
+            value: root
+          - name: DB_PASSWORD
+            value: changeit
+        ports:
+        - containerPort: 3000
+          name: myapp-port
+        imagePullPolicy: IfNotPresent
+      restartPolicy: Always
