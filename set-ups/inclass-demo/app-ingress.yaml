@@ -1,0 +1,26 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+
+metadata:
+  name: myapp-ing
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: "/"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+
+spec:
+  rules:
+    - host: app1.104.248.96.252.nip.io
+      http:
+        paths:
+          - backend:
+              serviceName: myappv1-svc
+              servicePort: myappv1-port
+    - host: app2.104.248.96.252.nip.io
+      http:
+        paths:
+          - backend:
+              serviceName: myappv2-svc
+              servicePort: myappv2-port
+  backend:
+    serviceName: myappv2-svc
+    servicePort: myappv2-port
